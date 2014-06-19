@@ -9,18 +9,24 @@ module.exports = function render(input, context) {
     var arg = input.arg || {};
 
     arg.context = context;
-    var asyncContext = context.beginAsync(input.timeout);
+
+    var asyncContext;
+    var done = false;
     
     function onError(e) {
         asyncContext.error(e || 'Async fragment failed');
     }
     
     function renderBody(data) {
+        done = true;
         try {
             if (input.invokeBody) {
-                input.invokeBody(asyncContext, data);
+                input.invokeBody(asyncContext || context, data);
             }
-            asyncContext.end();
+
+            if (asyncContext) {
+                asyncContext.end();    
+            }
         } catch (e) {
             onError(e);
         }
@@ -41,5 +47,9 @@ module.exports = function render(input, context) {
         });
     } catch (e) {
         onError(e);
+    }
+
+    if (!done) {
+        asyncContext = context.beginAsync(input.timeout);
     }
 };
