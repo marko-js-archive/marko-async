@@ -23,6 +23,10 @@
                 },
                 "method": {
                     "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of async fragment for debugging purposes only"
                 }
             },
             "vars": [

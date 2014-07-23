@@ -50,6 +50,6 @@ module.exports = function render(input, context) {
     }
 
     if (!done) {
-        asyncContext = context.beginAsync(input.timeout);
+        asyncContext = context.beginAsync({timeout: input.timeout, name: input.name});
     }
 };
