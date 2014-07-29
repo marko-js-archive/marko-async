@@ -15,13 +15,23 @@ module.exports = function transform(node, compiler, template) {
 
     var argProps = [];
     var propsToRemove = [];
+
+    var hasNameProp = false;
     node.forEachProperty(function (name, value) {
         if (name.startsWith('arg-')) {
             var argName = name.substring('arg-'.length);
             argProps.push(JSON.stringify(argName) + ': ' + value);
             propsToRemove.push(name);
+        } else if (name === 'name') {
+            hasNameProp = true;
         }
     });
+
+    if (!hasNameProp) {
+        var name = node.getAttribute('data-provider');
+        node.setProperty('name', name);
+    }
+    
     propsToRemove.forEach(function (propName) {
         node.removeProperty(propName);
     });
