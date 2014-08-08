@@ -24,6 +24,9 @@
                 "method": {
                     "type": "string"
                 },
+                "timeout-message": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "description": "Name of async fragment for debugging purposes only"

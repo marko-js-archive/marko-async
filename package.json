@@ -1,32 +1,33 @@
 {
-    "name": "raptor-taglib-async",
-    "description": "Async taglib",
-    "keywords": [
-        "taglib",
-        "raptor-templates",
-        "async"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/raptorjs3/raptor-taglib-async.git"
-    },
-    "scripts": {
-        "test": "node_modules/.bin/jshint *.js dust/"
-    },
-    "author": "Patrick Steele-Idem <pnidem@gmail.com>",
-    "maintainers": [
-        "Patrick Steele-Idem <pnidem@gmail.com>"
-    ],
-    "dependencies": {
-        "raptor-data-providers": "^0.2.0-beta",
-        "raptor-dust": "^0.3.7-beta"
-    },
-    "devDependencies": {
-        "jshint": "^2.5.0"
-    },
-    "license": "Apache License v2.0",
-    "publishConfig": {
-        "registry": "https://registry.npmjs.org/"
-    },
-    "version": "0.1.3-beta"
+  "name": "raptor-taglib-async",
+  "description": "Async taglib",
+  "keywords": [
+    "taglib",
+    "raptor-templates",
+    "async"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raptorjs3/raptor-taglib-async.git"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/jshint *.js dust/"
+  },
+  "author": "Patrick Steele-Idem <pnidem@gmail.com>",
+  "maintainers": [
+    "Patrick Steele-Idem <pnidem@gmail.com>"
+  ],
+  "dependencies": {
+    "raptor-data-providers": "^0.2.0-beta",
+    "raptor-dust": "^0.3.7-beta",
+    "raptor-logging": "^0.2.6-beta"
+  },
+  "devDependencies": {
+    "jshint": "^2.5.0"
+  },
+  "license": "Apache License v2.0",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "version": "0.1.3-beta"
 }

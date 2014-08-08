@@ -1,5 +1,6 @@
 'use strict';
 var raptorDataProviders = require('raptor-data-providers');
+var logger = require('raptor-logging').logger(module);
 
 module.exports = function render(input, context) {
     var dataProvider = input.dataProvider;
@@ -12,12 +13,24 @@ module.exports = function render(input, context) {
 
     var asyncContext;
     var done = false;
+    var timeoutId = null;
+    var name = input.name;
     
     function onError(e) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+        
         asyncContext.error(e || 'Async fragment failed');
     }
     
     function renderBody(data) {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+        }
+
         done = true;
         try {
             if (input.invokeBody) {
@@ -50,6 +63,32 @@ module.exports = function render(input, context) {
     }
 
     if (!done) {
-        asyncContext = context.beginAsync({timeout: input.timeout, name: input.name});
+        var timeout = input.timeout;
+        var timeoutMessage = input.timeoutMessage;
+
+        if (timeout == null) {
+            timeout = 10000;
+        } else if (timeout <= 0) {
+            timeout = null;
+        }
+
+        if (timeout != null) {
+            timeoutId = setTimeout(function() {
+                var message = 'Async fragment (' + name + ') timed out after ' + timeout + 'ms';
+
+                if (timeoutMessage) {
+                    logger.error(message);
+                    asyncContext.write(timeoutMessage);
+                    asyncContext.end();
+                } else {
+                    onError(new Error(message));
+                }
+            }, timeout);
+        }
+
+        asyncContext = context.beginAsync({
+            timeout: 0, // We will use our code for controlling timeout 
+            name: input.name
+        });
     }
 };
