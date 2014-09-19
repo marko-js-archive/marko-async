@@ -1,6 +1,6 @@
 {
     "name": "marko-taglib-async",
-    "description": "Async taglib",
+    "description": "Async taglib for Marko",
     "keywords": [
         "taglib",
         "marko",
@@ -29,5 +29,5 @@
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
     },
-    "version": "1.0.0"
+    "version": "1.1.0"
 }
