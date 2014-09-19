@@ -1,14 +1,14 @@
 {
-    "name": "raptor-taglib-async",
+    "name": "marko-taglib-async",
     "description": "Async taglib",
     "keywords": [
         "taglib",
-        "raptor-templates",
+        "marko",
         "async"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/raptorjs3/raptor-taglib-async.git"
+        "url": "https://github.com/raptorjs3/marko-taglib-async.git"
     },
     "scripts": {
         "test": "node_modules/.bin/jshint *.js dust/"
@@ -29,5 +29,5 @@
     "publishConfig": {
         "registry": "https://registry.npmjs.org/"
     },
-    "version": "1.0.1-beta"
+    "version": "1.0.0"
 }
