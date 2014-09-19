@@ -1,14 +1,14 @@
 {
-    "name": "marko-taglib-async",
+    "name": "marko-async",
     "description": "Async taglib for Marko",
     "keywords": [
-        "taglib",
+        "marko-taglib",
         "marko",
         "async"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/raptorjs3/marko-taglib-async.git"
+        "url": "https://github.com/raptorjs3/marko-async.git"
     },
     "scripts": {
         "test": "node_modules/.bin/jshint *.js dust/"
