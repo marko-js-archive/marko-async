@@ -33,7 +33,7 @@
                 }
             },
             "vars": [
-                "context",
+                "out",
                 {
                     "name-from-attribute": "var OR dependency OR data-provider|keep"
                 }

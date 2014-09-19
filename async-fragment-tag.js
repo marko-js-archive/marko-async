@@ -4,7 +4,7 @@ var logger = require('raptor-logging').logger(module);
 
 module.exports = function render(input, context) {
     var dataProvider = input.dataProvider;
-    
+
     var dataProviders = raptorDataProviders.forContext(context, false /* don't create if missing */);
 
     var arg = input.arg || {};
@@ -15,16 +15,16 @@ module.exports = function render(input, context) {
     var done = false;
     var timeoutId = null;
     var name = input.name;
-    
+
     function onError(e) {
         if (timeoutId) {
             clearTimeout(timeoutId);
             timeoutId = null;
         }
-        
+
         asyncContext.error(e || 'Async fragment failed');
     }
-    
+
     function renderBody(data) {
         if (timeoutId) {
             clearTimeout(timeoutId);
@@ -38,7 +38,7 @@ module.exports = function render(input, context) {
             }
 
             if (asyncContext) {
-                asyncContext.end();    
+                asyncContext.end();
             }
         } catch (e) {
             onError(e);
@@ -87,7 +87,7 @@ module.exports = function render(input, context) {
         }
 
         asyncContext = context.beginAsync({
-            timeout: 0, // We will use our code for controlling timeout 
+            timeout: 0, // We will use our code for controlling timeout
             name: input.name
         });
     }

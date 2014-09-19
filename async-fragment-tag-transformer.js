@@ -11,7 +11,7 @@ module.exports = function transform(node, compiler, template) {
         node.addError('Either "var" or "data-provider" is required');
         return;
     }
-    
+
 
     var argProps = [];
     var propsToRemove = [];
@@ -31,7 +31,7 @@ module.exports = function transform(node, compiler, template) {
         var name = node.getAttribute('data-provider');
         node.setProperty('name', name);
     }
-    
+
     propsToRemove.forEach(function (propName) {
         node.removeProperty(propName);
     });
