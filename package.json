@@ -18,9 +18,8 @@
         "Patrick Steele-Idem <pnidem@gmail.com>"
     ],
     "dependencies": {
-        "raptor-data-providers": "^1.0.0-beta",
-        "raptor-dust": "^1.0.0-beta",
-        "raptor-logging": "^1.0.0-beta"
+        "raptor-dust": "^1.0.0",
+        "raptor-logging": "^1.0.0"
     },
     "devDependencies": {
         "jshint": "^2.5.0"

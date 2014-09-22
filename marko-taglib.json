@@ -4,7 +4,7 @@
             "renderer": "./async-fragment-tag",
             "attributes": {
                 "data-provider": {
-                    "type": "string"
+                    "type": "expression"
                 },
                 "arg": {
                     "type": "expression",
@@ -29,13 +29,13 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of async fragment for debugging purposes only"
+                    "description": "Name of async fragment (for debugging purposes only)"
                 }
             },
             "vars": [
                 "out",
                 {
-                    "name-from-attribute": "var OR dependency OR data-provider|keep"
+                    "name-from-attribute": "var"
                 }
             ],
             "transformer": "./async-fragment-tag-transformer"

@@ -1,6 +1,6 @@
 {
     "predef": [
-        
+
     ],
 
     "globals": {
@@ -35,7 +35,7 @@
     "latedef": true,
     "unused": "vars",
     "strict": false,
-    
+
     /* Relaxing options: */
     "eqnull": true
 }

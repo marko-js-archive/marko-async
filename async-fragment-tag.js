@@ -1,17 +1,56 @@
 'use strict';
-var raptorDataProviders = require('raptor-data-providers');
+
 var logger = require('raptor-logging').logger(module);
 
-module.exports = function render(input, context) {
+function isPromise(o) {
+    return o && typeof o.then === 'function';
+}
+
+function promiseToCallback(promise, callback) {
+    if (callback) {
+        promise.then(
+            function(data) {
+                callback(null, data);
+            },
+            function(err) {
+                callback(err);
+            })
+            .done();
+    }
+
+    return promise;
+}
+
+function requestData(provider, args, callback) {
+
+    if (isPromise(provider)) {
+        promiseToCallback(provider, callback);
+        return;
+    }
+
+    if (typeof provider === 'function') {
+        var data = provider(args, callback);
+        if (data !== undefined) {
+            if (isPromise(data)) {
+                promiseToCallback(data, callback);
+            }
+            else {
+                callback(null, data);
+            }
+        }
+    } else {
+        // Assume the provider is a data object...
+        callback(null, provider);
+    }
+
+}
+
+module.exports = function render(input, out) {
     var dataProvider = input.dataProvider;
-
-    var dataProviders = raptorDataProviders.forContext(context, false /* don't create if missing */);
-
     var arg = input.arg || {};
+    arg.out = out;
 
-    arg.context = context;
-
-    var asyncContext;
+    var asyncOut;
     var done = false;
     var timeoutId = null;
     var name = input.name;
@@ -22,7 +61,11 @@ module.exports = function render(input, context) {
             timeoutId = null;
         }
 
-        asyncContext.error(e || 'Async fragment failed');
+        if (asyncOut) {
+            asyncOut.error(e || 'Async fragment failed');
+        } else {
+            out.error(e);
+        }
     }
 
     function renderBody(data) {
@@ -32,16 +75,13 @@ module.exports = function render(input, context) {
         }
 
         done = true;
-        try {
-            if (input.invokeBody) {
-                input.invokeBody(asyncContext || context, data);
-            }
 
-            if (asyncContext) {
-                asyncContext.end();
-            }
-        } catch (e) {
-            onError(e);
+        if (input.invokeBody) {
+            input.invokeBody(asyncOut || out, data);
+        }
+
+        if (asyncOut) {
+            asyncOut.end();
         }
     }
 
@@ -50,17 +90,13 @@ module.exports = function render(input, context) {
         dataProvider = dataProvider[method].bind(dataProvider);
     }
 
-    try {
-        dataProviders.requestData(dataProvider, arg, function(err, data) {
-            if (err) {
-                return onError(err);
-            }
+    requestData(dataProvider, arg, function(err, data) {
+        if (err) {
+            return onError(err);
+        }
 
-            renderBody(data);
-        });
-    } catch (e) {
-        onError(e);
-    }
+        renderBody(data);
+    });
 
     if (!done) {
         var timeout = input.timeout;
@@ -78,15 +114,15 @@ module.exports = function render(input, context) {
 
                 if (timeoutMessage) {
                     logger.error(message);
-                    asyncContext.write(timeoutMessage);
-                    asyncContext.end();
+                    asyncOut.write(timeoutMessage);
+                    asyncOut.end();
                 } else {
                     onError(new Error(message));
                 }
             }, timeout);
         }
 
-        asyncContext = context.beginAsync({
+        asyncOut = out.beginAsync({
             timeout: 0, // We will use our code for controlling timeout
             name: input.name
         });
