@@ -1,6 +1,6 @@
 var raptorDust = require('raptor-dust');
 
-exports.registerHelpers = function(dust) {    
+exports.registerHelpers = function(dust) {
     raptorDust.registerHelpers({
         'async-fragment': {
             buildInput: function(chunk, context, bodies, params, renderContext) {
@@ -36,13 +36,4 @@ exports.registerHelpers = function(dust) {
             renderer: require('../async-fragment-tag')
         }
     }, dust);
-
-    dust.helpers.testAsync = function(chunk, context, bodies, params) {
-        return chunk.map(function(asyncChunk) {
-            setTimeout(function() {
-                asyncChunk.write('Hello WORLD');
-                asyncChunk.end();    
-            }, 100);
-        });
-    };
 };
