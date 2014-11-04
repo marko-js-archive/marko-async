@@ -30,6 +30,10 @@
                 "name": {
                     "type": "string",
                     "description": "Name of async fragment (for debugging purposes only)"
+                },
+                "client-reorder": {
+                    "type": "boolean",
+                    "description": "Use JavaScript on client to move async fragment into the proper place."
                 }
             },
             "vars": [
@@ -39,6 +43,11 @@
                 }
             ],
             "transformer": "./async-fragment-tag-transformer"
+        },
+        "async-fragments": {
+            "renderer": "./async-fragments-tag",
+            "attributes": {
+            }
         }
     }
 }

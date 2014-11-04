@@ -1,6 +1,9 @@
 'use strict';
 
 var logger = require('raptor-logging').logger(module);
+var asyncWriter = require('async-writer');
+var DataHolder = require('raptor-async/DataHolder');
+var isClientReorderSupported = require('./client-reorder').isSupported;
 
 function isPromise(o) {
     return o && typeof o.then === 'function';
@@ -50,6 +53,8 @@ module.exports = function render(input, out) {
     var arg = input.arg || {};
     arg.out = out;
 
+
+    var clientReorder = input.clientReorder === true;
     var asyncOut;
     var done = false;
     var timeoutId = null;
@@ -82,6 +87,10 @@ module.exports = function render(input, out) {
 
         if (asyncOut) {
             asyncOut.end();
+        }
+
+        if (out.stream && out.stream.flush) {
+            out.stream.flush();
         }
     }
 
@@ -122,9 +131,38 @@ module.exports = function render(input, out) {
             }, timeout);
         }
 
-        asyncOut = out.beginAsync({
-            timeout: 0, // We will use our code for controlling timeout
-            name: input.name
-        });
+        if (clientReorder && isClientReorderSupported) {
+            var asyncFragmentContext = out.global.__asyncFragments || (asyncFragmentContext = out.global.__asyncFragments = {
+                fragments: [],
+                nextId: 0
+            });
+
+            var id = asyncFragmentContext.nextId++;
+
+            out.write('<span id="afph' + id + '"></span>');
+            var dataHolder = new DataHolder();
+
+            // Write to an in-memory buffer
+            asyncOut = asyncWriter.create(null, out.global);
+
+            asyncOut
+                .on('finish', function() {
+                    dataHolder.resolve(asyncOut.getOutput());
+                })
+                .on('error', function(err) {
+                    dataHolder.reject(err);
+                });
+
+            asyncFragmentContext.fragments.push({
+                id: id,
+                dataHolder: dataHolder,
+                out: asyncOut
+            });
+        } else {
+            asyncOut = out.beginAsync({
+                timeout: 0, // We will use our code for controlling timeout
+                name: input.name
+            });
+        }
     }
 };
