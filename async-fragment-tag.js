@@ -89,8 +89,8 @@ module.exports = function render(input, out) {
             asyncOut.end();
         }
 
-        if (out.stream && out.stream.flush) {
-            out.stream.flush();
+        if (!clientReorder) {
+            out.flush();
         }
     }
 

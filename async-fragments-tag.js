@@ -18,7 +18,7 @@ module.exports = function(input, out) {
                 af.dataHolder.done(function(err, html) {
 
                     if (!global._afRuntime) {
-                        out.write(clientReorder.getCode());
+                        asyncOut.write(clientReorder.getCode());
                         global._afRuntime = true;
                     }
 
@@ -26,13 +26,18 @@ module.exports = function(input, out) {
                     asyncOut.write(html);
                     asyncOut.write('</div>');
                     asyncOut.write('<script type="text/javascript">$af(' + af.id + ')</script>');
+
+
+                    // asyncOut.write('<div id="af' + af.id + '" style="display:none">' +
+                    //     html +
+                    //     '</div>' +
+                    //     '<script type="text/javascript">$af(' + af.id + ')</script>');
+
                     af.out.writer = asyncOut.writer;
                     out.emit('asyncFragmentFinish', {
                         out: af.out
                     });
-                    if (out.stream && out.stream.flush) {
-                        out.stream.flush();
-                    }
+                    out.flush();
                     callback();
                 });
             };
