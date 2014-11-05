@@ -53,8 +53,7 @@ module.exports = function render(input, out) {
     var arg = input.arg || {};
     arg.out = out;
 
-
-    var clientReorder = input.clientReorder === true;
+    var clientReorder = isClientReorderSupported && input.clientReorder === true;
     var asyncOut;
     var done = false;
     var timeoutId = null;
@@ -131,7 +130,7 @@ module.exports = function render(input, out) {
             }, timeout);
         }
 
-        if (clientReorder && isClientReorderSupported) {
+        if (clientReorder) {
             var asyncFragmentContext = out.global.__asyncFragments || (asyncFragmentContext = out.global.__asyncFragments = {
                 fragments: [],
                 nextId: 0
@@ -143,7 +142,7 @@ module.exports = function render(input, out) {
             var dataHolder = new DataHolder();
 
             // Write to an in-memory buffer
-            asyncOut = asyncWriter.create(null, out.global);
+            asyncOut = asyncWriter.create(null, {global: out.global});
 
             asyncOut
                 .on('finish', function() {
@@ -159,6 +158,7 @@ module.exports = function render(input, out) {
                 out: asyncOut
             });
         } else {
+            out.flush(); // Flush everything up to this async fragment
             asyncOut = out.beginAsync({
                 timeout: 0, // We will use our code for controlling timeout
                 name: input.name

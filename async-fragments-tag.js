@@ -1,7 +1,10 @@
 var parallel = require('raptor-async/parallel');
 var clientReorder = require('./client-reorder');
+
 module.exports = function(input, out) {
     var global = out.global;
+
+    out.flush();
 
     var asyncOut = out.beginAsync({ last: true, timeout: -1 });
     out.onLast(function(next) {
@@ -22,21 +25,16 @@ module.exports = function(input, out) {
                         global._afRuntime = true;
                     }
 
-                    asyncOut.write('<div id="af' + af.id + '" style="display:none">');
-                    asyncOut.write(html);
-                    asyncOut.write('</div>');
-                    asyncOut.write('<script type="text/javascript">$af(' + af.id + ')</script>');
-
-
-                    // asyncOut.write('<div id="af' + af.id + '" style="display:none">' +
-                    //     html +
-                    //     '</div>' +
-                    //     '<script type="text/javascript">$af(' + af.id + ')</script>');
+                    asyncOut.write('<div id="af' + af.id + '" style="display:none">' +
+                        html +
+                        '</div>' +
+                        '<script type="text/javascript">$af(' + af.id + ')</script>');
 
                     af.out.writer = asyncOut.writer;
                     out.emit('asyncFragmentFinish', {
                         out: af.out
                     });
+
                     out.flush();
                     callback();
                 });
