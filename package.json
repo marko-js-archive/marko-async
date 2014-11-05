@@ -1,37 +1,37 @@
 {
-  "name": "marko-async",
-  "description": "Async taglib for Marko",
-  "keywords": [
-    "marko-taglib",
-    "marko",
-    "async"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/raptorjs/marko-async.git"
-  },
-  "scripts": {
-    "test": "node_modules/.bin/jshint *.js dust/"
-  },
-  "author": "Patrick Steele-Idem <pnidem@gmail.com>",
-  "maintainers": [
-    "Patrick Steele-Idem <pnidem@gmail.com>"
-  ],
-  "dependencies": {
-    "async-writer": "^1.2.4",
-    "raptor-async": "^1.0.1",
-    "raptor-dust": "^1.1.2",
-    "raptor-logging": "^1.0.1"
-  },
-  "devDependencies": {
-    "jshint": "^2.5.0"
-  },
-  "license": "Apache License v2.0",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  },
-  "version": "1.2.5",
-  "browser": {
-      "./client-reorder.js": "./client-reorder-browser.js"
-  }
+    "name": "marko-async",
+    "description": "Async taglib for Marko",
+    "keywords": [
+        "marko-taglib",
+        "marko",
+        "async"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/raptorjs/marko-async.git"
+    },
+    "scripts": {
+        "test": "node_modules/.bin/jshint *.js dust/"
+    },
+    "author": "Patrick Steele-Idem <pnidem@gmail.com>",
+    "maintainers": [
+        "Patrick Steele-Idem <pnidem@gmail.com>"
+    ],
+    "dependencies": {
+        "async-writer": "^1.2.4",
+        "raptor-async": "^1.0.1",
+        "raptor-dust": "^1.1.2",
+        "raptor-logging": "^1.0.1"
+    },
+    "devDependencies": {
+        "jshint": "^2.5.0"
+    },
+    "license": "Apache License v2.0",
+    "publishConfig": {
+        "registry": "https://registry.npmjs.org/"
+    },
+    "browser": {
+        "./client-reorder.js": "./client-reorder-browser.js"
+    },
+    "version": "1.2.6"
 }
