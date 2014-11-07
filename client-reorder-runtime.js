@@ -11,4 +11,6 @@ window.$af = function(id) {
     }
 
     targetEl.parentNode.replaceChild(docFragment, targetEl);
+
+    // sourceEl.parentNode.removeChild(sourceEl);
 };
