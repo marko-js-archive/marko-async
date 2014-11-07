@@ -86,10 +86,12 @@ module.exports = function render(input, out) {
 
         if (asyncOut) {
             asyncOut.end();
-        }
 
-        if (!clientReorder) {
-            out.flush();
+            // Only flush if we rendered asynchronously and we aren't using
+            // client-reordering
+            if (!clientReorder) {
+                out.flush();
+            }
         }
     }
 
@@ -158,6 +160,7 @@ module.exports = function render(input, out) {
                 out: asyncOut
             });
         } else {
+            console.log('FLUSHING');
             out.flush(); // Flush everything up to this async fragment
             asyncOut = out.beginAsync({
                 timeout: 0, // We will use our code for controlling timeout
