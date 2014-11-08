@@ -32,7 +32,11 @@ function requestData(provider, args, callback) {
     }
 
     if (typeof provider === 'function') {
-        var data = provider(args, callback);
+
+        var data = provider.length === 1 ?
+            provider(callback) :
+            provider(args, callback);
+
         if (data !== undefined) {
             if (isPromise(data)) {
                 promiseToCallback(data, callback);
