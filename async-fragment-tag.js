@@ -9,7 +9,7 @@ function isPromise(o) {
     return o && typeof o.then === 'function';
 }
 
-function promiseToCallback(promise, callback) {
+function promiseToCallback(promise, callback, thisObj) {
     if (callback) {
         promise.then(
             function(data) {
@@ -24,18 +24,21 @@ function promiseToCallback(promise, callback) {
     return promise;
 }
 
-function requestData(provider, args, callback) {
+function requestData(provider, args, callback, thisObj) {
 
     if (isPromise(provider)) {
+        // promises don't support a scope so we can ignore thisObj
         promiseToCallback(provider, callback);
         return;
     }
 
     if (typeof provider === 'function') {
+        var data = (provider.length === 1) ?
+            // one argument so only provide callback to function call
+            provider.call(thisObj, callback) :
 
-        var data = provider.length === 1 ?
-            provider(callback) :
-            provider(args, callback);
+            // two arguments so provide args and callback to function call
+            provider.call(thisObj, args, callback);
 
         if (data !== undefined) {
             if (isPromise(data)) {
@@ -49,7 +52,6 @@ function requestData(provider, args, callback) {
         // Assume the provider is a data object...
         callback(null, provider);
     }
-
 }
 
 module.exports = function render(input, out) {
@@ -62,6 +64,7 @@ module.exports = function render(input, out) {
     var done = false;
     var timeoutId = null;
     var name = input.name;
+    var scope = input.scope || this;
 
     function onError(e) {
         if (timeoutId) {
@@ -110,7 +113,7 @@ module.exports = function render(input, out) {
         }
 
         renderBody(data);
-    });
+    }, scope);
 
     if (!done) {
         var timeout = input.timeout;

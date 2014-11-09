@@ -34,6 +34,9 @@
                 "client-reorder": {
                     "type": "boolean",
                     "description": "Use JavaScript on client to move async fragment into the proper place."
+                },
+                "scope": {
+                    "type": "expression"
                 }
             },
             "vars": [
