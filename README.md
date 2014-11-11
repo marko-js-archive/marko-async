@@ -17,18 +17,22 @@ With the new Pull Model approach, template rendering begins immediately. In addi
 # Example
 
 ```javascript
-template.render({
-        userProfileDataProvider: function(arg, callback) {
-            var userId = arg.userId;
-            userProfileService.getUserProfile(userId, callback);
-        }
-    }, ...);
+var template = require('marko').load(require.resolve('./template.marko'));
+
+module.exports = function(req, res) {
+    var userId = req.query.userId;
+    template.render({
+            userProfileDataProvider: function(callback) {
+
+                userProfileService.getUserProfile(userId, callback);
+            }
+        }, res);
+}
 ```
 
 ```html
 <async-fragment data-provider="data.userProfileDataProvider"
-    var="userProfile"
-    arg-userId="${data.userId}">
+    var="userProfile">
 
     <ul>
         <li>
@@ -44,3 +48,33 @@ template.render({
 
 </async-fragment>
 ```
+
+# Out-of-order Flushing
+
+The marko-async taglib also supports out-of-order flushing. Enabling out-of-order flushing requires two steps:
+
+1. Add the `client-reoder` attribute to the `<async-fragment>` tag:<br>
+
+```html
+<async-fragment data-provider="data.userProfileDataProvider"
+    var="userProfile"
+    client-reorder="true">
+
+    <ul>
+        <li>
+            First name: ${userProfile.firstName}
+        </li>
+        <li>
+            Last name: ${userProfile.lastName}
+        </li>
+        <li>
+            Email address: ${userProfile.email}
+        </li>
+    </ul>
+
+</async-fragment>
+```
+
+2. Add the `<async-fragments>` to the end of the page.
+
+If the `client-reorder` is `true` then a placeholder element will be rendered to the output instead of the final HTML for the async fragment. The async fragment will be instead rendered at the end of the page and client-side JavaScript code will be used to move the async fragment into the proper place in the DOM. The `<async-fragments>` will be where the out-of-order fragments are rendered before they are moved into place. If there are any out-of-order fragments then inline JavaScript code will be injected into the page at this location to move the DOM nodes into the proper place in the DOM.
