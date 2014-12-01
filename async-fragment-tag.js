@@ -91,9 +91,11 @@ module.exports = function render(input, out) {
             input.invokeBody(asyncOut || out, data);
         }
 
-        out.emit('asyncFragmentFinish', {
-            out: asyncOut || out
-        });
+        if (!clientReorder) {
+            out.emit('asyncFragmentFinish', {
+                out: asyncOut || out
+            });
+        }
 
         if (asyncOut) {
             asyncOut.end();

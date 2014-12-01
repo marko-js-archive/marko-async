@@ -41,9 +41,10 @@ module.exports = function(input, out) {
                     '<script type="text/javascript">$af(' + (typeof af.id === 'number' ? af.id : '"' + af.id + '"') + (af.after ? (',"' + af.after + '"') : '' ) + ')</script>');
 
                 af.out.writer = asyncOut.writer;
-                // out.emit('asyncFragmentFinish', {
-                //     out: af.out
-                // });
+
+                out.emit('asyncFragmentFinish', {
+                    out: af.out
+                });
 
                 out.flush();
 
