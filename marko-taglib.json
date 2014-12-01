@@ -40,6 +40,9 @@
                 },
                 "show-after": {
                     "type": "string"
+                },
+                "placeholder": {
+                    "type": "string"
                 }
             },
             "vars": [
