@@ -14,15 +14,6 @@ The problem with the traditional Push Model approach is that template rendering 
 
 With the new Pull Model approach, template rendering begins immediately. In addition, fragments of the template that depend on data from data providers are rendered asynchronously and wait only on the associated data provider to complete. The template rendering will only be delayed for data that the template actually needs.
 
-# async-fragment tag params
-
-* data-provider: Mandatory parameter specifying the source of data for the async fragment
-* var: name to use when consuming info from the data provider
-* timeout: Override the default timeout of 10 seconds with this param. Units are in
-  milliseconds so timeout="40000" would give a 40 second timeout.
-* timeout-message: Message to output if the fragment times out. Specifying this
-  will prevent the async fragment timeout from aborting.
-
 # Example
 
 ```javascript
@@ -62,7 +53,7 @@ module.exports = function(req, res) {
 
 The marko-async taglib also supports out-of-order flushing. Enabling out-of-order flushing requires two steps:
 
-1. Add the `client-reoder` attribute to the `<async-fragment>` tag:<br>
+1. Add the `client-reorder` attribute to the `<async-fragment>` tag:<br>
 
 ```html
 <async-fragment data-provider="data.userProfileDataProvider"
@@ -87,3 +78,64 @@ The marko-async taglib also supports out-of-order flushing. Enabling out-of-orde
 2. Add the `<async-fragments>` to the end of the page.
 
 If the `client-reorder` is `true` then a placeholder element will be rendered to the output instead of the final HTML for the async fragment. The async fragment will be instead rendered at the end of the page and client-side JavaScript code will be used to move the async fragment into the proper place in the DOM. The `<async-fragments>` will be where the out-of-order fragments are rendered before they are moved into place. If there are any out-of-order fragments then inline JavaScript code will be injected into the page at this location to move the DOM nodes into the proper place in the DOM.
+
+# Taglib API
+
+## `<async-fragment>`
+
+Supported Attributes:
+
+* __`arg`__ (expression): The argument object to provide to the data provider function.
+* __`arg-<arg_name>`__ (string): An argument to add to the `arg` object provided to the data provider function.
+* __`data-provider`__ (expression, required): The source of data for the async fragment. Must be a reference to one of the following:
+    - `Function(callback)`
+    - `Function(args, callback)`
+    - `Promise`
+    - Data
+* __`name`__ (string): Name to assign to this async fragment. Used for debugging purposes as well as by the `show-after` attribute (see below).
+* __`placeholder`__ (string): Placeholder text to show while waiting for an out-of-order fragment to complete. Only applicable if `client-reorder` is set to `true`.
+* __`show-after`__ (string): When `client-reorder` is set to `true` then displaying this fragment will be delayed until the referenced async fragment is shown.
+* __`timeout`__ (integer): Override the default timeout of 10 seconds with this param. Units are in
+milliseconds so `timeout="40000"` would give a 40 second timeout.
+* __`timeout-message`__ (string): Message to output if the fragment times out. Specifying this
+will prevent the rendering from aborting.
+* __`var`__: Variable name to use when consuming the data provided by the data provider
+
+## `<async-fragment-placeholder>`
+
+This tag can be used to control what text is shown while an out-of-order async fragment is waiting to be loaded. Only applicable if `client-reorder` is set to `true`.
+
+Example:
+
+```html
+<async-fragment data-provider="data.userDataProvider" var="user" client-reorder>
+    <async-fragment-placeholder>
+        Loading user data...
+    </async-fragment-placeholder>
+
+    <ul>
+        <li>First name: $user.firstName</li>
+        <li>Last name: $user.lastName</li>
+    </ul>
+
+</async-fragment>
+```
+
+## `<async-fragments>`
+
+Container for all out-of-order async fragments. If any `<async-fragment>` have `client-reorder` set to true then this tag needs to be included in the page template (typically, right before the closing `</body>` tag).
+
+Example:
+
+```html
+<!DOCTYPE html>
+<html>
+...
+<body>
+    ...
+    <async-fragment ... client-reorder/>
+    ...
+    <async-fragments/>
+</body>
+</html>
+```
