@@ -29,7 +29,7 @@ module.exports = function transform(node, compiler, template) {
 
     if (!hasNameProp) {
         var name = node.getAttribute('data-provider');
-        node.setProperty('name', name);
+        node.setProperty('_name', name);
     }
 
     propsToRemove.forEach(function (propName) {

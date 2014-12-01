@@ -63,7 +63,7 @@ module.exports = function render(input, out) {
     var asyncOut;
     var done = false;
     var timeoutId = null;
-    var name = input.name;
+    var name = input.name || input._name;
     var scope = input.scope || this;
 
     function onError(e) {
@@ -90,6 +90,10 @@ module.exports = function render(input, out) {
         if (input.invokeBody) {
             input.invokeBody(asyncOut || out, data);
         }
+
+        out.emit('asyncFragmentFinish', {
+            out: asyncOut || out
+        });
 
         if (asyncOut) {
             asyncOut.end();
@@ -145,9 +149,9 @@ module.exports = function render(input, out) {
                 nextId: 0
             });
 
-            var id = asyncFragmentContext.nextId++;
+            var id = input.name || asyncFragmentContext.nextId++;
 
-            out.write('<span id="afph' + id + '"></span>');
+            out.write('<span id="afph' + id + '">' + (input.placeholder || '') + '</span>');
             var dataHolder = new DataHolder();
 
             // Write to an in-memory buffer
@@ -161,11 +165,19 @@ module.exports = function render(input, out) {
                     dataHolder.reject(err);
                 });
 
-            asyncFragmentContext.fragments.push({
+            var fragmentInfo = {
                 id: id,
                 dataHolder: dataHolder,
-                out: asyncOut
-            });
+                out: asyncOut,
+                after: input.showAfter
+            };
+
+            if (asyncFragmentContext.fragments) {
+                asyncFragmentContext.fragments.push(fragmentInfo);
+            } else {
+                out.emit('asyncFragmentBegin', fragmentInfo);
+            }
+
         } else {
             out.flush(); // Flush everything up to this async fragment
             asyncOut = out.beginAsync({

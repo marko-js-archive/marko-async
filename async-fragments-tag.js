@@ -1,4 +1,3 @@
-var parallel = require('raptor-async/parallel');
 var clientReorder = require('./client-reorder');
 
 module.exports = function(input, out) {
@@ -16,37 +15,55 @@ module.exports = function(input, out) {
             return;
         }
 
-        var asyncTasks = asyncFragmentsContext.fragments.map(function(af) {
-            return function(callback) {
-                af.dataHolder.done(function(err, html) {
+        var remaining = asyncFragmentsContext.fragments.length;
 
-                    if (!global._afRuntime) {
-                        asyncOut.write(clientReorder.getCode());
-                        global._afRuntime = true;
-                    }
+        var done = false;
 
-                    asyncOut.write('<div id="af' + af.id + '" style="display:none">' +
-                        html +
-                        '</div>' +
-                        '<script type="text/javascript">$af(' + af.id + ')</script>');
+        function handleAsyncFragment(af) {
+            af.dataHolder.done(function(err, html) {
+                if (done) {
+                    return;
+                }
 
-                    af.out.writer = asyncOut.writer;
-                    out.emit('asyncFragmentFinish', {
-                        out: af.out
-                    });
+                if (err) {
+                    done = true;
+                    return asyncOut.error(err);
+                }
 
-                    out.flush();
-                    callback();
-                });
-            };
+                if (!global._afRuntime) {
+                    asyncOut.write(clientReorder.getCode());
+                    global._afRuntime = true;
+                }
+
+                asyncOut.write('<div id="af' + af.id + '" style="display:none">' +
+                    html +
+                    '</div>' +
+                    '<script type="text/javascript">$af(' + (typeof af.id === 'number' ? af.id : '"' + af.id + '"') + (af.after ? (',"' + af.after + '"') : '' ) + ')</script>');
+
+                af.out.writer = asyncOut.writer;
+                // out.emit('asyncFragmentFinish', {
+                //     out: af.out
+                // });
+
+                out.flush();
+
+                if (--remaining === 0) {
+                    done = true;
+                    asyncOut.end();
+                    next();
+                }
+            });
+        }
+
+        asyncFragmentsContext.fragments.forEach(handleAsyncFragment);
+
+        out.on('asyncFragmentBegin', function(af) {
+            remaining++;
+            handleAsyncFragment(af);
         });
 
-        parallel(asyncTasks, function(err) {
-            if (err) {
-                return asyncOut.error(err);
-            }
-            asyncOut.end();
-            next();
-        });
+        // Now that we have a listener attached, we want to receive any additional
+        // out-of-sync fragments via an event
+        delete asyncFragmentsContext.fragments;
     });
 };

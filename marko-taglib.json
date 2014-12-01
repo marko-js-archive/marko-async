@@ -37,6 +37,9 @@
                 },
                 "scope": {
                     "type": "expression"
+                },
+                "show-after": {
+                    "type": "string"
                 }
             },
             "vars": [
@@ -51,6 +54,10 @@
             "renderer": "./async-fragments-tag",
             "attributes": {
             }
+        },
+        "async-fragment-placeholder": {
+            "node-class": "./AsyncFragmentPlaceholderNode",
+            "transformer": "./async-fragment-placeholder-tag-transformer"
         }
     }
 }
