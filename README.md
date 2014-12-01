@@ -14,6 +14,15 @@ The problem with the traditional Push Model approach is that template rendering 
 
 With the new Pull Model approach, template rendering begins immediately. In addition, fragments of the template that depend on data from data providers are rendered asynchronously and wait only on the associated data provider to complete. The template rendering will only be delayed for data that the template actually needs.
 
+# async-fragment tag params
+
+* data-provider: Mandatory parameter specifying the source of data for the async fragment
+* var: name to use when consuming info from the data provider
+* timeout: Override the default timeout of 10 seconds with this param. Units are in
+  milliseconds so timeout="40000" would give a 40 second timeout.
+* timeout-message: Message to output if the fragment times out. Specifying this
+  will prevent the async fragment timeout from aborting.
+
 # Example
 
 ```javascript
