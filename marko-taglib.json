@@ -61,6 +61,10 @@
         "async-fragment-placeholder": {
             "node-class": "./AsyncFragmentPlaceholderNode",
             "transformer": "./async-fragment-placeholder-tag-transformer"
+        },
+        "async-fragment-timeout": {
+          "node-class": "./AsyncFragmentTimeoutNode",
+          "transformer": "./async-fragment-timeout-tag-transformer"
         }
     }
 }
