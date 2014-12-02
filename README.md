@@ -121,6 +121,25 @@ Example:
 </async-fragment>
 ```
 
+## `<async-fragment-timeout>`
+
+This tag can be used to control what text is shown when an async fragment times out.
+
+Example:
+
+```html
+<async-fragment data-provider="data.userDataProvider" var="user" client-reorder>
+    <async-fragment-timeout>
+    A timeout occurred!
+    </async-fragment-timeout>
+
+    <ul>
+        <li>First name: $user.firstName</li>
+        <li>Last name: $user.lastName</li>
+    </ul>
+</async-fragment>
+```
+
 ## `<async-fragments>`
 
 Container for all out-of-order async fragments. If any `<async-fragment>` have `client-reorder` set to true then this tag needs to be included in the page template (typically, right before the closing `</body>` tag).
