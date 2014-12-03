@@ -27,6 +27,9 @@
                 "timeout-message": {
                     "type": "string"
                 },
+                "error-message": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
                     "description": "Name of async fragment (for debugging purposes only)"

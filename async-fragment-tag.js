@@ -72,20 +72,12 @@ module.exports = function render(input, out) {
             timeoutId = null;
         }
 
-        if (asyncOut) {
-          if (input.errorMessage) {
-            asyncOut.write(input.errorMessage);
-          }
-          else {
-            asyncOut.error(e || 'Async fragment failed');
-          }
+        var targetOut = asyncOut || out;
+
+        if (input.errorMessage) {
+            targetOut.write(input.errorMessage);
         } else {
-          if (input.errorMessage) {
-            out.write(input.errorMessage);
-          }
-          else {
-            out.error(e);
-          }
+            targetOut.error(e || 'Async fragment failed');
         }
     }
 
