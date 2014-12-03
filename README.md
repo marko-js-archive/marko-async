@@ -92,6 +92,7 @@ Supported Attributes:
     - `Function(args, callback)`
     - `Promise`
     - Data
+* __`error-message`__ (string): Message to output if the fragment errors out. Specifying this will prevent the rendering from aborting.
 * __`name`__ (string): Name to assign to this async fragment. Used for debugging purposes as well as by the `show-after` attribute (see below).
 * __`placeholder`__ (string): Placeholder text to show while waiting for an out-of-order fragment to complete. Only applicable if `client-reorder` is set to `true`.
 * __`show-after`__ (string): When `client-reorder` is set to `true` then displaying this fragment will be delayed until the referenced async fragment is shown.
@@ -121,6 +122,25 @@ Example:
 </async-fragment>
 ```
 
+## `<async-fragment-error>`
+
+This tag can be used to control what text is shown when an async fragment errors out.
+
+Example:
+
+```html
+<async-fragment data-provider="data.userDataProvider" var="user">
+    <async-fragment-error>
+        An error occurred!
+    </async-fragment-error>
+
+    <ul>
+        <li>First name: $user.firstName</li>
+        <li>Last name: $user.lastName</li>
+    </ul>
+</async-fragment>
+```
+
 ## `<async-fragment-timeout>`
 
 This tag can be used to control what text is shown when an async fragment times out.
@@ -128,7 +148,7 @@ This tag can be used to control what text is shown when an async fragment times 
 Example:
 
 ```html
-<async-fragment data-provider="data.userDataProvider" var="user" client-reorder>
+<async-fragment data-provider="data.userDataProvider" var="user">
     <async-fragment-timeout>
     A timeout occurred!
     </async-fragment-timeout>
