@@ -73,9 +73,19 @@ module.exports = function render(input, out) {
         }
 
         if (asyncOut) {
+          if (input.message) {
+            asyncOut.write(input.message);
+          }
+          else {
             asyncOut.error(e || 'Async fragment failed');
+          }
         } else {
+          if (input.message) {
+            out.write(input.message);
+          }
+          else {
             out.error(e);
+          }
         }
     }
 

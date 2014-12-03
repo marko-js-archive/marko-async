@@ -65,6 +65,10 @@
         "async-fragment-timeout": {
           "node-class": "./AsyncFragmentTimeoutNode",
           "transformer": "./async-fragment-timeout-tag-transformer"
+        },
+        "async-fragment-error": {
+          "node-class": "./AsyncFragmentErrorNode",
+          "transformer": "./async-fragment-error-tag-transformer"
         }
     }
 }
