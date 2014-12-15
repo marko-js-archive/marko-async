@@ -19,149 +19,139 @@ function promiseToCallback(promise, callback, thisObj) {
                 callback(err);
             })
             .done();
+        }
+
+        return promise;
     }
 
-    return promise;
-}
+    function requestData(provider, args, callback, thisObj) {
 
-function requestData(provider, args, callback, thisObj) {
+        if (isPromise(provider)) {
+            // promises don't support a scope so we can ignore thisObj
+            promiseToCallback(provider, callback);
+            return;
+        }
 
-    if (isPromise(provider)) {
-        // promises don't support a scope so we can ignore thisObj
-        promiseToCallback(provider, callback);
-        return;
-    }
-
-    if (typeof provider === 'function') {
-        var data = (provider.length === 1) ?
+        if (typeof provider === 'function') {
+            var data = (provider.length === 1) ?
             // one argument so only provide callback to function call
             provider.call(thisObj, callback) :
 
             // two arguments so provide args and callback to function call
             provider.call(thisObj, args, callback);
 
-        if (data !== undefined) {
-            if (isPromise(data)) {
-                promiseToCallback(data, callback);
-            }
-            else {
-                callback(null, data);
-            }
-        }
-    } else {
-        // Assume the provider is a data object...
-        callback(null, provider);
-    }
-}
-
-module.exports = function render(input, out) {
-    var dataProvider = input.dataProvider;
-    var arg = input.arg || {};
-    arg.out = out;
-
-    var clientReorder = isClientReorderSupported && input.clientReorder === true;
-    var asyncOut;
-    var done = false;
-    var timeoutId = null;
-    var name = input.name || input._name;
-    var scope = input.scope || this;
-
-    function onError(e) {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-        }
-
-        var targetOut = asyncOut || out;
-
-        if (input.errorMessage) {
-            targetOut.write(input.errorMessage);
-        } else {
-            targetOut.error(e || 'Async fragment failed');
-        }
-    }
-
-    function renderBody(data) {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-        }
-
-        done = true;
-
-        if (input.invokeBody) {
-            input.invokeBody(asyncOut || out, data);
-        }
-
-        if (!clientReorder) {
-            out.emit('asyncFragmentFinish', {
-                out: asyncOut || out
-            });
-        }
-
-        if (asyncOut) {
-            asyncOut.end();
-
-            // Only flush if we rendered asynchronously and we aren't using
-            // client-reordering
-            if (!clientReorder) {
-                out.flush();
-            }
-        }
-    }
-
-    var method = input.method;
-    if (method) {
-        dataProvider = dataProvider[method].bind(dataProvider);
-    }
-
-    requestData(dataProvider, arg, function(err, data) {
-        if (err) {
-            return onError(err);
-        }
-
-        renderBody(data);
-    }, scope);
-
-    if (!done) {
-        var timeout = input.timeout;
-        var timeoutMessage = input.timeoutMessage;
-
-        if (timeout == null) {
-            timeout = 10000;
-        } else if (timeout <= 0) {
-            timeout = null;
-        }
-
-        if (timeout != null) {
-            timeoutId = setTimeout(function() {
-                var message = 'Async fragment (' + name + ') timed out after ' + timeout + 'ms';
-
-                if (timeoutMessage) {
-                    logger.error(message);
-                    asyncOut.write(timeoutMessage);
-                    asyncOut.end();
-                } else {
-                    onError(new Error(message));
+            if (data !== undefined) {
+                if (isPromise(data)) {
+                    promiseToCallback(data, callback);
                 }
-            }, timeout);
+                else {
+                    callback(null, data);
+                }
+            }
+        } else {
+            // Assume the provider is a data object...
+            callback(null, provider);
+        }
+    }
+
+    module.exports = function render(input, out) {
+        var dataProvider = input.dataProvider;
+        var arg = input.arg || {};
+        arg.out = out;
+
+        var clientReorder = isClientReorderSupported && input.clientReorder === true;
+        var asyncOut;
+        var done = false;
+        var timeoutId = null;
+        var name = input.name || input._name;
+        var scope = input.scope || this;
+
+        function renderBody(err, data, timeoutMessage) {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+            }
+
+            done = true;
+
+            var targetOut = asyncOut || out;
+
+            if (err) {
+                if (input.errorMessage) {
+                    targetOut.write(input.errorMessage);
+                } else {
+                    targetOut.error(err);
+                }
+            } else if (timeoutMessage) {
+                asyncOut.write(timeoutMessage);
+            } else {
+                if (input.invokeBody) {
+                    input.invokeBody(targetOut, data);
+                }
+            }
+
+            if (!clientReorder) {
+                out.emit('asyncFragmentFinish', {
+                    out: targetOut
+                });
+            }
+
+            if (asyncOut) {
+                asyncOut.end();
+
+                // Only flush if we rendered asynchronously and we aren't using
+                // client-reordering
+                if (!clientReorder) {
+                    out.flush();
+                }
+            }
         }
 
-        if (clientReorder) {
-            var asyncFragmentContext = out.global.__asyncFragments || (asyncFragmentContext = out.global.__asyncFragments = {
-                fragments: [],
-                nextId: 0
-            });
+        var method = input.method;
+        if (method) {
+            dataProvider = dataProvider[method].bind(dataProvider);
+        }
 
-            var id = input.name || asyncFragmentContext.nextId++;
+        requestData(dataProvider, arg, renderBody, scope);
 
-            out.write('<span id="afph' + id + '">' + (input.placeholder || '') + '</span>');
-            var dataHolder = new DataHolder();
+        if (!done) {
+            var timeout = input.timeout;
+            var timeoutMessage = input.timeoutMessage;
 
-            // Write to an in-memory buffer
-            asyncOut = asyncWriter.create(null, {global: out.global});
+            if (timeout == null) {
+                timeout = 10000;
+            } else if (timeout <= 0) {
+                timeout = null;
+            }
 
-            asyncOut
+            if (timeout != null) {
+                timeoutId = setTimeout(function() {
+                    var message = 'Async fragment (' + name + ') timed out after ' + timeout + 'ms';
+
+                    if (timeoutMessage) {
+                        logger.error(message);
+                        renderBody(null, null, timeoutMessage);
+                    } else {
+                        renderBody(new Error(message));
+                    }
+                }, timeout);
+            }
+
+            if (clientReorder) {
+                var asyncFragmentContext = out.global.__asyncFragments || (asyncFragmentContext = out.global.__asyncFragments = {
+                    fragments: [],
+                    nextId: 0
+                });
+
+                var id = input.name || asyncFragmentContext.nextId++;
+
+                out.write('<span id="afph' + id + '">' + (input.placeholder || '') + '</span>');
+                var dataHolder = new DataHolder();
+
+                // Write to an in-memory buffer
+                asyncOut = asyncWriter.create(null, {global: out.global});
+
+                asyncOut
                 .on('finish', function() {
                     dataHolder.resolve(asyncOut.getOutput());
                 })
@@ -169,25 +159,25 @@ module.exports = function render(input, out) {
                     dataHolder.reject(err);
                 });
 
-            var fragmentInfo = {
-                id: id,
-                dataHolder: dataHolder,
-                out: asyncOut,
-                after: input.showAfter
-            };
+                var fragmentInfo = {
+                    id: id,
+                    dataHolder: dataHolder,
+                    out: asyncOut,
+                    after: input.showAfter
+                };
 
-            if (asyncFragmentContext.fragments) {
-                asyncFragmentContext.fragments.push(fragmentInfo);
+                if (asyncFragmentContext.fragments) {
+                    asyncFragmentContext.fragments.push(fragmentInfo);
+                } else {
+                    out.emit('asyncFragmentBegin', fragmentInfo);
+                }
+
             } else {
-                out.emit('asyncFragmentBegin', fragmentInfo);
+                out.flush(); // Flush everything up to this async fragment
+                asyncOut = out.beginAsync({
+                    timeout: 0, // We will use our code for controlling timeout
+                    name: input.name
+                });
             }
-
-        } else {
-            out.flush(); // Flush everything up to this async fragment
-            asyncOut = out.beginAsync({
-                timeout: 0, // We will use our code for controlling timeout
-                name: input.name
-            });
         }
-    }
-};
+    };
