@@ -16,6 +16,7 @@ module.exports = function(input, out) {
         }
 
         var remaining = asyncFragmentsContext.fragments.length;
+        var events = asyncFragmentsContext.events;
 
         var done = false;
 
@@ -42,7 +43,7 @@ module.exports = function(input, out) {
 
                 af.out.writer = asyncOut.writer;
 
-                out.emit('asyncFragmentFinish', {
+                events.emit('asyncFragmentFinish', {
                     out: af.out
                 });
 
@@ -58,7 +59,7 @@ module.exports = function(input, out) {
 
         asyncFragmentsContext.fragments.forEach(handleAsyncFragment);
 
-        out.on('asyncFragmentBegin', function(af) {
+        events.on('asyncFragmentBegin', function(af) {
             remaining++;
             handleAsyncFragment(af);
         });

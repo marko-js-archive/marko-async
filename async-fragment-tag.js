@@ -140,8 +140,11 @@ function promiseToCallback(promise, callback, thisObj) {
             if (clientReorder) {
                 var asyncFragmentContext = out.global.__asyncFragments || (asyncFragmentContext = out.global.__asyncFragments = {
                     fragments: [],
-                    nextId: 0
+                    nextId: 0,
+                    events: out // Communicate on the original AsyncWriter
                 });
+
+                var events = asyncFragmentContext.events;
 
                 var id = input.name || asyncFragmentContext.nextId++;
 
@@ -152,12 +155,12 @@ function promiseToCallback(promise, callback, thisObj) {
                 asyncOut = asyncWriter.create(null, {global: out.global});
 
                 asyncOut
-                .on('finish', function() {
-                    dataHolder.resolve(asyncOut.getOutput());
-                })
-                .on('error', function(err) {
-                    dataHolder.reject(err);
-                });
+                    .on('finish', function() {
+                        dataHolder.resolve(asyncOut.getOutput());
+                    })
+                    .on('error', function(err) {
+                        dataHolder.reject(err);
+                    });
 
                 var fragmentInfo = {
                     id: id,
@@ -169,7 +172,7 @@ function promiseToCallback(promise, callback, thisObj) {
                 if (asyncFragmentContext.fragments) {
                     asyncFragmentContext.fragments.push(fragmentInfo);
                 } else {
-                    out.emit('asyncFragmentBegin', fragmentInfo);
+                    events.emit('asyncFragmentBegin', fragmentInfo);
                 }
 
             } else {
