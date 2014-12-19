@@ -58,6 +58,7 @@ function promiseToCallback(promise, callback, thisObj) {
         var dataProvider = input.dataProvider;
         var arg = input.arg || {};
         arg.out = out;
+        var events = out.global.events;
 
         var clientReorder = isClientReorderSupported && input.clientReorder === true;
         var asyncOut;
@@ -76,6 +77,12 @@ function promiseToCallback(promise, callback, thisObj) {
 
             var targetOut = asyncOut || out;
 
+            events.emit('asyncFragmentBeforeRender', {
+                clientReorder: clientReorder,
+                out: targetOut,
+                name: name
+            });
+
             if (err) {
                 if (input.errorMessage) {
                     targetOut.write(input.errorMessage);
@@ -91,7 +98,8 @@ function promiseToCallback(promise, callback, thisObj) {
             }
 
             if (!clientReorder) {
-                out.emit('asyncFragmentFinish', {
+                events.emit('asyncFragmentFinish', {
+                    clientReorder: false,
                     out: targetOut
                 });
             }
@@ -140,11 +148,8 @@ function promiseToCallback(promise, callback, thisObj) {
             if (clientReorder) {
                 var asyncFragmentContext = out.global.__asyncFragments || (asyncFragmentContext = out.global.__asyncFragments = {
                     fragments: [],
-                    nextId: 0,
-                    events: out // Communicate on the original AsyncWriter
+                    nextId: 0
                 });
-
-                var events = asyncFragmentContext.events;
 
                 var id = input.name || asyncFragmentContext.nextId++;
 

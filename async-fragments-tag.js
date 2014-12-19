@@ -2,6 +2,7 @@ var clientReorder = require('./client-reorder');
 
 module.exports = function(input, out) {
     var global = out.global;
+    var events = global.events;
 
     out.flush();
 
@@ -16,7 +17,6 @@ module.exports = function(input, out) {
         }
 
         var remaining = asyncFragmentsContext.fragments.length;
-        var events = asyncFragmentsContext.events;
 
         var done = false;
 
@@ -44,6 +44,7 @@ module.exports = function(input, out) {
                 af.out.writer = asyncOut.writer;
 
                 events.emit('asyncFragmentFinish', {
+                    clientReorder: true,
                     out: af.out
                 });
 
