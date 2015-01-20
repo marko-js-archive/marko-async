@@ -87,6 +87,7 @@ Supported Attributes:
 
 * __`arg`__ (expression): The argument object to provide to the data provider function.
 * __`arg-<arg_name>`__ (string): An argument to add to the `arg` object provided to the data provider function.
+* __`client-reorder`__ (boolean): If true, then the async fragments will be flushed in the order they complete and JavaScript running on the client will be used to move the async fragments into the proper HTML order in the DOM.
 * __`data-provider`__ (expression, required): The source of data for the async fragment. Must be a reference to one of the following:
     - `Function(callback)`
     - `Function(args, callback)`
