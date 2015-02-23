@@ -49,7 +49,6 @@
                 }
             },
             "vars": [
-                "out",
                 {
                     "name-from-attribute": "var"
                 }

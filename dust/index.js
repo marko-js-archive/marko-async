@@ -23,12 +23,12 @@ exports.registerHelpers = function(dust) {
                     }
                 }
 
-                params.invokeBody = function(asyncContext, data) {
+                params.renderBody = function(out, data) {
                     var varName = params['var'];
                     var newContextObj = {};
                     newContextObj[varName] = data;
                     var newContext = context.push(newContextObj);
-                    asyncContext.renderDustBody(bodies.block, newContext);
+                    out.renderDustBody(bodies.block, newContext);
                 };
 
                 return params;

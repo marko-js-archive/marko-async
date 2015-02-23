@@ -92,8 +92,8 @@ module.exports = function render(input, out) {
         } else if (timeoutMessage) {
             asyncOut.write(timeoutMessage);
         } else {
-            if (input.invokeBody) {
-                input.invokeBody(targetOut, data);
+            if (input.renderBody) {
+                input.renderBody(targetOut, data);
             }
         }
 
