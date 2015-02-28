@@ -11,14 +11,16 @@ function isPromise(o) {
 
 function promiseToCallback(promise, callback, thisObj) {
     if (callback) {
-        promise.then(
+        var finalPromise = promise.then(
             function(data) {
                 callback(null, data);
             },
             function(err) {
                 callback(err);
-            })
-            .done();
+            });
+        if (finalPromise.done) {
+            finalPromise.done();
+        }
     }
 
     return promise;
