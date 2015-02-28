@@ -17,8 +17,7 @@ function promiseToCallback(promise, callback, thisObj) {
             },
             function(err) {
                 callback(err);
-            })
-            .done();
+            });
     }
 
     return promise;
