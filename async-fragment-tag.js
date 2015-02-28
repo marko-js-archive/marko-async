@@ -18,6 +18,9 @@ function promiseToCallback(promise, callback, thisObj) {
             function(err) {
                 callback(err);
             });
+        if (finalPromise.done) {
+            finalPromise.done();
+        }
     }
 
     return promise;
