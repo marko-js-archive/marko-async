@@ -186,7 +186,7 @@ module.exports = function render(input, out) {
             out.flush(); // Flush everything up to this async fragment
             asyncOut = out.beginAsync({
                 timeout: 0, // We will use our code for controlling timeout
-                name: input.name
+                name: name
             });
         }
     }
