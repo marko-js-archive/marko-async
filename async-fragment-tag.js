@@ -2,7 +2,7 @@
 
 var logger = require('raptor-logging').logger(module);
 var asyncWriter = require('async-writer');
-var DataHolder = require('raptor-async/DataHolder');
+var AsyncValue = require('raptor-async/AsyncValue');
 var isClientReorderSupported = require('./client-reorder').isSupported;
 
 function isPromise(o) {
@@ -88,6 +88,7 @@ module.exports = function render(input, out) {
 
         if (err) {
             if (input.errorMessage) {
+                console.error('Async fragment (' + name + ') failed. Error:', (err.stack || err));
                 targetOut.write(input.errorMessage);
             } else {
                 targetOut.error(err);
@@ -157,22 +158,22 @@ module.exports = function render(input, out) {
             var id = input.name || asyncFragmentContext.nextId++;
 
             out.write('<span id="afph' + id + '">' + (input.placeholder || '') + '</span>');
-            var dataHolder = new DataHolder();
+            var asyncValue = new AsyncValue();
 
             // Write to an in-memory buffer
             asyncOut = asyncWriter.create(null, {global: out.global});
 
             asyncOut
                 .on('finish', function() {
-                    dataHolder.resolve(asyncOut.getOutput());
+                    asyncValue.resolve(asyncOut.getOutput());
                 })
                 .on('error', function(err) {
-                    dataHolder.reject(err);
+                    asyncValue.reject(err);
                 });
 
             var fragmentInfo = {
                 id: id,
-                dataHolder: dataHolder,
+                asyncValue: asyncValue,
                 out: asyncOut,
                 after: input.showAfter
             };
