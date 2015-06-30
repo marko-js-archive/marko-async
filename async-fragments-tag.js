@@ -21,7 +21,7 @@ module.exports = function(input, out) {
         var done = false;
 
         function handleAsyncFragment(af) {
-            af.dataHolder.done(function(err, html) {
+            af.asyncValue.done(function(err, html) {
                 if (done) {
                     return;
                 }
