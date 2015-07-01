@@ -11,17 +11,24 @@ function isPromise(o) {
 
 function promiseToCallback(promise, callback, thisObj) {
     if (callback) {
-        var finalPromise = promise
-            .then(function(data) {
-                callback(null, data);
-            })
-            .fail(function(err) {
-                callback(err);
-            });
+      var finalPromise = promise
+        .then(function(data) {
+          callback(null, data);
+        });
 
-        if (finalPromise.done) {
-            finalPromise.done();
-        }
+      if (typeof promise.catch === 'function') {
+        finalPromise = finalPromise.catch(function(err) {
+          callback(err);
+        });
+      } else if (typeof promise.fail === 'function') {
+        finalPromise = finalPromise.fail(function(err) {
+          callback(err);
+        });
+      }
+
+      if (finalPromise.done) {
+        finalPromise.done();
+      }
     }
 
     return promise;
