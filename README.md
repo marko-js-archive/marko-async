@@ -6,7 +6,7 @@ The `marko-async` taglib provides support for the more efficient and simpler "Pu
 * __Push Model:__ Request all needed data upfront and wait for all of the data to be received before building the view model and then rendering the template.
 * __Pull Model:__ Pass asynchronous data provider functions to template immediately start rendering the template. Let the template _pull_ the data needed during rendering.
 
-The Pull Model approach to template rendering requires the use of a templating engine that supports asynchronous template rendering (e.g. [marko](https://github.com/raptorjs/marko) and [dust](https://github.com/linkedin/dustjs)). This is because before rendering the template begins not all of data may have been fully retrieved. Parts of a template that depend on data that is not yet available are rendered asynchronously with the Pull Model approach.
+The Pull Model approach to template rendering requires the use of a templating engine that supports asynchronous template rendering (e.g. [marko](https://github.com/marko-js/marko) and [dust](https://github.com/linkedin/dustjs)). This is because before rendering the template begins not all of data may have been fully retrieved. Parts of a template that depend on data that is not yet available are rendered asynchronously with the Pull Model approach.
 
 # Push Model versus Pull Model
 
@@ -17,13 +17,12 @@ With the new Pull Model approach, template rendering begins immediately. In addi
 # Example
 
 ```javascript
-var template = require('marko').load(require.resolve('./template.marko'));
+var template = require('./template.marko');
 
 module.exports = function(req, res) {
     var userId = req.query.userId;
     template.render({
             userProfileDataProvider: function(callback) {
-
                 userProfileService.getUserProfile(userId, callback);
             }
         }, res);
