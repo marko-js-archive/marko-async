@@ -115,8 +115,8 @@ Example:
     </async-fragment-placeholder>
 
     <ul>
-        <li>First name: $user.firstName</li>
-        <li>Last name: $user.lastName</li>
+        <li>First name: ${user.firstName}</li>
+        <li>Last name: ${user.lastName}</li>
     </ul>
 
 </async-fragment>
@@ -135,8 +135,8 @@ Example:
     </async-fragment-error>
 
     <ul>
-        <li>First name: $user.firstName</li>
-        <li>Last name: $user.lastName</li>
+        <li>First name: ${user.firstName}</li>
+        <li>Last name: ${user.lastName}</li>
     </ul>
 </async-fragment>
 ```
@@ -154,8 +154,8 @@ Example:
     </async-fragment-timeout>
 
     <ul>
-        <li>First name: $user.firstName</li>
-        <li>Last name: $user.lastName</li>
+        <li>First name: ${user.firstName}</li>
+        <li>Last name: ${user.lastName}</li>
     </ul>
 </async-fragment>
 ```
