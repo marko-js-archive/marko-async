@@ -36,9 +36,9 @@ module.exports = function(input, out) {
                     global._afRuntime = true;
                 }
 
-                asyncOut.write('<div id="af' + af.id + '" style="display:none">' +
+                asyncOut.write('<noscript id="af' + af.id + '">' +
                     html +
-                    '</div>' +
+                    '</noscript>' +
                     '<script type="text/javascript">$af(' + (typeof af.id === 'number' ? af.id : '"' + af.id + '"') + (af.after ? (',"' + af.after + '"') : '' ) + ')</script>');
 
                 af.out.writer = asyncOut.writer;
