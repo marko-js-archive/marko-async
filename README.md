@@ -30,7 +30,7 @@ module.exports = function(req, res) {
 ```
 
 ```html
-<async-fragment data-provider="data.userProfileDataProvider"
+<async-fragment data-provider=data.userProfileDataProvider
     var="userProfile">
 
     <ul>
@@ -55,7 +55,7 @@ The marko-async taglib also supports out-of-order flushing. Enabling out-of-orde
 1. Add the `client-reorder` attribute to the `<async-fragment>` tag:<br>
 
 ```html
-<async-fragment data-provider="data.userProfileDataProvider"
+<async-fragment data-provider=data.userProfileDataProvider
     var="userProfile"
     client-reorder="true">
 
@@ -109,7 +109,7 @@ This tag can be used to control what text is shown while an out-of-order async f
 Example:
 
 ```html
-<async-fragment data-provider="data.userDataProvider" var="user" client-reorder>
+<async-fragment data-provider=data.userDataProvider var="user" client-reorder>
     <async-fragment-placeholder>
         Loading user data...
     </async-fragment-placeholder>
@@ -129,7 +129,7 @@ This tag can be used to control what text is shown when an async fragment errors
 Example:
 
 ```html
-<async-fragment data-provider="data.userDataProvider" var="user">
+<async-fragment data-provider=data.userDataProvider var="user">
     <async-fragment-error>
         An error occurred!
     </async-fragment-error>
@@ -148,7 +148,7 @@ This tag can be used to control what text is shown when an async fragment times 
 Example:
 
 ```html
-<async-fragment data-provider="data.userDataProvider" var="user">
+<async-fragment data-provider=data.userDataProvider var="user">
     <async-fragment-timeout>
     A timeout occurred!
     </async-fragment-timeout>
