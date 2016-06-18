@@ -1,6 +1,15 @@
 marko-async
 =====================
 
+----------------
+
+:heavy_exclamation_mark: The source code and documentation in this repo are only relevant to Marko v2. For Marko v3, this repo has been merged into the main [marko](https://github.com/marko-js/marko) repo.
+
+- Marko v3 async taglib docs: http://markojs.com/docs/marko/language-guide/#async-taglib
+- Marko v3 async taglib source code: [marko/taglibs/async](https://github.com/marko-js/marko/tree/master/taglibs/async)
+
+----------------
+
 The `marko-async` taglib provides support for the more efficient and simpler "Pull Model "approach to providing templates with view model data.
 
 * __Push Model:__ Request all needed data upfront and wait for all of the data to be received before building the view model and then rendering the template.
